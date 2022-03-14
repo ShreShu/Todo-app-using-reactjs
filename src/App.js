@@ -1,11 +1,25 @@
 import { Button, FormControl, TextField } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { Todo } from "./Todo";
+import { db } from "./firebase";
+import { collection, getDocs } from "firebase/firestore/lite";
 
 function App() {
-  const [todos, setTodos] = useState(["Take dogs for a walk", "take dustbin"]);
+  const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
+
+  useEffect(async () => {
+    {
+      /*BUG: not taking real time data,need to display
+   this process on taking snapshot ie when any new todo is added it should show itself  */
+    }
+
+    const todoCol = collection(db, "todos");
+    const todoSnapshot = await getDocs(todoCol);
+    console.log("I am snapshot", todoSnapshot);
+    setTodos(todoSnapshot.docs.map((doc) => doc.data().todo));
+  }, []);
 
   const addTodo = (event) => {
     event.preventDefault(); //will stop the refresh
