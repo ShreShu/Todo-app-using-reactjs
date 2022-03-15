@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import { Todo } from "./Todo";
 import { db } from "./firebase";
-import { collection, getDocs } from "firebase/firestore/lite";
+import { collection, getDocs, addDoc } from "firebase/firestore/lite";
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -22,8 +22,11 @@ function App() {
   }, []);
 
   const addTodo = (event) => {
+    const todoCol = collection(db, "todos");
     event.preventDefault(); //will stop the refresh
-    setTodos([...todos, input]); //to set new state value along with previous state
+    addDoc(todoCol, {
+      todo: input,
+    });
     setInput(""); //set the input again to blank after submission
   };
 
