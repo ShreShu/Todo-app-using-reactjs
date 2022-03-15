@@ -3,7 +3,14 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import { Todo } from "./Todo";
 import { db } from "./firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore/lite";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  Timestamp,
+  orderBy,
+  query,
+} from "firebase/firestore/lite";
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -14,9 +21,9 @@ function App() {
       /*BUG: not taking real time data,need to display
    this process on taking snapshot ie when any new todo is added it should show itself  */
     }
-
     const todoCol = collection(db, "todos");
-    const todoSnapshot = await getDocs(todoCol);
+    const qry = query(todoCol, orderBy("timestamp", "desc"));
+    const todoSnapshot = await getDocs(qry);
     console.log("I am snapshot", todoSnapshot);
     setTodos(todoSnapshot.docs.map((doc) => doc.data().todo));
   }, []);
@@ -26,6 +33,7 @@ function App() {
     event.preventDefault(); //will stop the refresh
     addDoc(todoCol, {
       todo: input,
+      timestamp: Timestamp.now(),
     });
     setInput(""); //set the input again to blank after submission
   };
